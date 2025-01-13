@@ -23,6 +23,7 @@ onMounted(() => {
     <EventCard
       v-for="event in events"
       :key="event.id"
+      :id="event.id"
       :title="event.title"
       :time="event.time"
       :date="event.date"

@@ -13,4 +13,8 @@ const getEvents = () => {
   return apiClient.get('/events')
 }
 
-export default { getEvents }
+const getEvent = (id) => {
+  return apiClient.get(`/events/${id}`)
+}
+
+export default { getEvents, getEvent }
