@@ -1,19 +1,35 @@
 <script setup>
 import EventCard from '@/components/EventCard.vue'
 import EventService from '@/services/EventService.js'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watchEffect } from 'vue'
 
+const props = defineProps(['page'])
 const events = ref(null)
+const totalEvents = ref(0)
+
+// const { page } = toRefs(props)
+
+const page = computed(() => props.page)
+const hasNextPage = computed(() => {
+  const totalPages = Math.ceil(totalEvents.value / 2)
+  return page.value < totalPages
+})
 
 onMounted(() => {
-  EventService.getEvents()
-    .then((response) => {
-      if (response.status === 200) events.value = response.data
-      else throw new Error('Could not retrieve data!')
-    })
-    .catch((error) => {
-      console.error(error)
-    })
+  watchEffect(() => {
+    events.value = null
+    EventService.getEvents(2, page.value)
+      .then((response) => {
+        if (response.status === 200) {
+          events.value = response.data
+          console.log(response)
+          totalEvents.value = response.headers['x-total-count']
+        } else throw new Error('Could not retrieve data!')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  })
 })
 </script>
 
@@ -28,6 +44,23 @@ onMounted(() => {
       :time="event.time"
       :date="event.date"
     />
+
+    <div class="pagination">
+      <RouterLink
+        id="page-prev"
+        :to="{ name: 'event-list', query: { page: page - 1 } }"
+        rel="prev"
+        v-if="page != 1"
+        >&#60; Previous</RouterLink
+      >
+      <RouterLink
+        id="page-next"
+        :to="{ name: 'event-list', query: { page: page + 1 } }"
+        rel="next"
+        v-if="hasNextPage"
+        >Next &#62;</RouterLink
+      >
+    </div>
   </div>
 </template>
 
@@ -36,5 +69,23 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.pagination {
+  display: flex;
+  width: 290px;
+}
+.pagination a {
+  flex: 1;
+  text-decoration: none;
+  color: #2c3e50;
+}
+
+#page-prev {
+  text-align: left;
+}
+
+#page-next {
+  text-align: right;
 }
 </style>
