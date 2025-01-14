@@ -68,6 +68,17 @@ const router = createRouter({
       component: NetworkError,
     },
   ],
+  scrollBehavior(to, from, savePosition) {
+    console.log('Scroll Behavior Triggered:', { to, from, savePosition })
+
+    if (savePosition) {
+      return savePosition
+    }
+    return {
+      left: 0,
+      top: 0,
+    }
+  },
 })
 
 export default router
