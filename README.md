@@ -33,3 +33,5 @@ npm run build
 ```sh
 npm run lint
 ```
+
+Repository needs to be public in order my-json-server work
