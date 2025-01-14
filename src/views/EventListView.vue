@@ -2,13 +2,14 @@
 import EventCard from '@/components/EventCard.vue'
 import EventService from '@/services/EventService.js'
 import { ref, onMounted, computed, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps(['page'])
 const events = ref(null)
 const totalEvents = ref(0)
 
 // const { page } = toRefs(props)
-
+const router = useRouter()
 const page = computed(() => props.page)
 const hasNextPage = computed(() => {
   const totalPages = Math.ceil(totalEvents.value / 2)
@@ -26,6 +27,8 @@ onMounted(() => {
         } else throw new Error('Could not retrieve data!')
       })
       .catch((error) => {
+        router.push({ name: 'network-error' })
+
         console.error(error)
       })
   })
