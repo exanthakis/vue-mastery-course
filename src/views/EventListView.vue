@@ -22,7 +22,6 @@ onMounted(() => {
       .then((response) => {
         if (response.status === 200) {
           events.value = response.data
-          console.log(response)
           totalEvents.value = response.headers['x-total-count']
         } else throw new Error('Could not retrieve data!')
       })
