@@ -1,29 +1,48 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   id: {
-    type: Number,
+    type: String,
     required: true,
   },
   title: {
     type: String,
     required: true,
   },
-  time: {
+  authorName: {
     type: String,
     required: true,
   },
-  date: {
+  coverEditionKey: {
     type: String,
-    required: true,
+    required: false,
+    default: '',
+  },
+  coverId: {
+    type: Number,
+    required: false,
+    default: 0,
   },
 })
+
+const coverPath = computed(() => {
+  if (props.coverEditionKey)
+    return 'https://covers.openlibrary.org/b/olid/' + props.coverEditionKey + '-M.jpg'
+  else if (props.coverId) return 'https://covers.openlibrary.org/b/id/' + props.coverId + '-M.jpg'
+  else return ''
+})
+
+console.log('cover', props.coverId)
 </script>
 
 <template>
   <RouterLink class="event-link" :to="{ name: 'event-details', params: { id } }">
     <div class="event-card">
       <h2>{{ title }}</h2>
-      <span>@{{ time }} on {{ date }}</span>
+      <span>{{ authorName }}</span>
+      <img :src="coverPath" :alt="title" />
+      <!-- <span>@{{ time }} on {{ date }}</span> -->
     </div>
   </RouterLink>
 </template>
@@ -43,5 +62,6 @@ defineProps({
 .event-link {
   color: #2c3e50;
   text-decoration: none;
+  width: fit-content;
 }
 </style>

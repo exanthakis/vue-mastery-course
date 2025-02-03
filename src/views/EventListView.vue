@@ -13,17 +13,18 @@ const router = useRouter()
 const page = computed(() => props.page)
 const hasNextPage = computed(() => {
   const totalPages = Math.ceil(totalEvents.value / 2)
+  console.log(totalPages)
   return page.value < totalPages
 })
 
 onMounted(() => {
   watchEffect(() => {
     events.value = null
-    EventService.getEvents(2, page.value)
+    EventService.getEvents(15, page.value)
       .then((response) => {
         if (response.status === 200) {
-          events.value = response.data
-          totalEvents.value = response.headers['x-total-count']
+          events.value = response.data.docs
+          totalEvents.value = response.data.numFound
         } else throw new Error('Could not retrieve data!')
       })
       .catch((error) => {
@@ -37,8 +38,16 @@ onMounted(() => {
 
 <template>
   <h1>Events For Good</h1>
-  <div class="events">
-    <EventCard v-for="event in events" :key="event.id" :="event" />
+  <div class="events" v-if="events">
+    <EventCard
+      v-for="event in events"
+      :key="event.key"
+      :id="event.key"
+      :title="event.title"
+      :author-name="event.author_name && event.author_name.length > 0 ? event.author_name[0] : ''"
+      :cover-edition-key="event.cover_edition_key"
+      :cover-id="event.cover_i"
+    />
 
     <div class="pagination">
       <RouterLink
@@ -61,9 +70,9 @@ onMounted(() => {
 
 <style scoped>
 .events {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 5px;
 }
 
 .pagination {
